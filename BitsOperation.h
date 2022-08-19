@@ -11,7 +11,7 @@ public:
      * it means that the orignal num2 enters at least 'temp' times in num1 so we can reduce num2(=temp*orignal num2) 
      * from num1 and add temp to the resulte 
     */
-    int divisionWay1(long num1, long num2) {
+    int divideWay1(int num1, int num2) {
         if (num1 == INT_MIN && num2 == -1) return INT_MAX;
         if (num1 == INT_MIN && num2 == 1) return INT_MIN;
 
@@ -29,6 +29,10 @@ public:
             sing = !sing;
             num2 = ~num2 + 1;
         }
+
+        if (num1 & 0x40000000 || num2 & 0x40000000)
+            return sing ? num1 / num2 : ~(num1 / num2) + 1;
+        
         // Multiples num2 and temp by 2 until num2 greater from num1
         while (num1 >= num2) {
             num2 = num2 << 1;
@@ -55,10 +59,10 @@ public:
      *  So after the inner loop we add to the answer 2^n (=tempAns) and remove 2^n * num2 (=temp) from num1
      *  Then we recalculates the new num1 divided in num2 until num1 < num2
     */
-    int divisionWay2(long num1, long num2) {
+    int divideWay2(int num1, int num2) {
         if (num1 == INT_MIN && num2 == -1) return INT_MAX;
         if (num1 == INT_MIN && num2 == 1) return INT_MIN;
-        
+
         bool sing = true;
         int ans = 0;
 
@@ -73,9 +77,13 @@ public:
             num2 = ~num2 + 1;
         }
         
+        if (num1 & 0x40000000 || num2 & 0x40000000)
+            return sing ? num1 / num2 : ~(num1 / num2) + 1;
+        
+        int temp, tempAns;
         while (num1 >= num2) {
-            int temp = num2;
-            int tempAns = 1;
+            temp = num2;
+            tempAns = 1;
             while (temp <= num1) {
                 temp = temp << 1;
                 tempAns = tempAns << 1;
@@ -93,7 +101,7 @@ public:
      * So we multiply num1 in 2 and divide num2 in 2 until num2 equal to zero
      * And adds num1 to the answer each time that num2 is odd
     */
-    int bitsMultByLsb(int num1, int num2)
+    int multByLsb(int num1, int num2)
     {
         int ans = 0;
         bool sing = true;
@@ -126,7 +134,7 @@ public:
      * To find log(num2) in base of 2 we can just find the msb of num2
      * num1 *(2^log(num2)) = num1 shift left log(num2) = num1 << log(num2)
     */
-    int bitsMultByMsb(int num1, int num2)
+    int multByMsb(int num1, int num2)
     {
         int ans = 0;
         bool sing = true;
@@ -142,7 +150,7 @@ public:
         }
         if (num2 > num1)
             swap(num1, num2);
-        
+
         int msb = findMsbPlace(num2, 30);
         while (num2) {
             ans += (num1 << msb); // add num1 *(2^log(num2)) 
